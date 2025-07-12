@@ -65,6 +65,16 @@ python3 manage.py createsuperuser
 python3 manage.py runserver
 ```
 
+## Static Files (for Production)
+
+To collect static files for production deployment:
+
+```bash
+python3 manage.py collectstatic --noinput
+```
+
+This will collect all static files into the `staticfiles/` directory.
+
 ## Usage
 
 ### Test account created
