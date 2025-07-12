@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - To-Do App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-{% if 'Edit' in title %}edit{% else %}plus{% endif %}"></i> {{ title }}</h4>
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Please correct the following errors:</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ field|capfirst }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            <i class="fas fa-heading"></i> Title <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control {% if form.title.errors %}is-invalid{% endif %}" 
+                               id="{{ form.title.id_for_label }}" 
+                               name="{{ form.title.name }}"
+                               value="{{ form.title.value|default:'' }}"
+                               placeholder="Enter task title"
+                               required>
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        <textarea class="form-control {% if form.description.errors %}is-invalid{% endif %}" 
+                                  id="{{ form.description.id_for_label }}" 
+                                  name="{{ form.description.name }}"
+                                  rows="4"
+                                  placeholder="Enter task description (optional)">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">
+                                    <i class="fas fa-exclamation"></i> Priority
+                                </label>
+                                <select class="form-select {% if form.priority.errors %}is-invalid{% endif %}" 
+                                        id="{{ form.priority.id_for_label }}" 
+                                        name="{{ form.priority.name }}">
+                                    {% for value, label in form.priority.field.choices %}
+                                        <option value="{{ value }}" 
+                                                {% if form.priority.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.priority.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.priority.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    <i class="fas fa-flag"></i> Status
+                                </label>
+                                <select class="form-select {% if form.status.errors %}is-invalid{% endif %}" 
+                                        id="{{ form.status.id_for_label }}" 
+                                        name="{{ form.status.name }}">
+                                    {% for value, label in form.status.field.choices %}
+                                        <option value="{{ value }}" 
+                                                {% if form.status.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.status.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.status.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar"></i> Due Date
+                                </label>
+                                <input type="date" 
+                                       class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" 
+                                       id="{{ form.due_date.id_for_label }}" 
+                                       name="{{ form.due_date.name }}"
+                                       value="{{ form.due_date.value|default:'' }}">
+                                {% if form.due_date.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.due_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'task_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-{% if 'Edit' in title %}save{% else %}plus{% endif %}"></i> {{ button_text }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6><i class="fas fa-lightbulb"></i> Tips:</h6>
+                <ul class="mb-0">
+                    <li><strong>Title:</strong> Keep it short and descriptive</li>
+                    <li><strong>Priority:</strong> High for urgent tasks, Normal for regular tasks, Low for when you have time</li>
+                    <li><strong>Status:</strong> Track your progress from To Do → In Progress → Completed</li>
+                    <li><strong>Due Date:</strong> Set a deadline to stay organized (optional)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

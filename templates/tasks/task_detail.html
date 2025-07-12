@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }} - To-Do App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card priority-{{ task.priority }}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 {% if task.status == 'completed' %}status-completed{% endif %}">
+                    {{ task.title }}
+                </h4>
+                <div>
+                    <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'normal' %}warning{% else %}success{% endif %}">
+                        {{ task.get_priority_display }}
+                    </span>
+                    <span class="badge bg-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}info{% else %}secondary{% endif %}">
+                        {{ task.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="card-body {% if task.status == 'completed' %}status-completed{% endif %}">
+                {% if task.description %}
+                    <h6>Description:</h6>
+                    <p class="card-text">{{ task.description|linebreaks }}</p>
+                {% else %}
+                    <p class="text-muted"><em>No description provided</em></p>
+                {% endif %}
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-calendar-plus"></i> Created Date:</h6>
+                        <p>{{ task.created_date|date:"m/d/Y at H:i" }}</p>
+                        
+                        {% if task.due_date %}
+                            <h6><i class="fas fa-clock"></i> Due Date:</h6>
+                            <p class="{% if task.due_date < today and task.status != 'completed' %}text-danger{% endif %}">
+                                {{ task.due_date|date:"m/d/Y" }}
+                                {% if task.due_date < today and task.status != 'completed' %}
+                                    <i class="fas fa-exclamation-triangle text-danger"></i> Overdue
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user"></i> Owner:</h6>
+                        <p>{{ task.user.username }}</p>
+                        
+                        <h6><i class="fas fa-clock"></i> Last Modified:</h6>
+                        <p>{{ task.modified_date|date:"m/d/Y at H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class="btn-group">
+                    <a href="{% url 'task_update' task.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{% url 'task_delete' task.pk %}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </div>
+                <a href="{% url 'task_list' %}" class="btn btn-secondary float-end">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Priority:</dt>
+                    <dd class="col-sm-6">
+                        <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'normal' %}warning{% else %}success{% endif %}">
+                            {{ task.get_priority_display }}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-sm-6">Status:</dt>
+                    <dd class="col-sm-6">
+                        <span class="badge bg-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}info{% else %}secondary{% endif %}">
+                            {{ task.get_status_display }}
+                        </span>
+                    </dd>
+                    
+                    {% if task.due_date %}
+                        <dt class="col-sm-6">Due Date:</dt>
+                        <dd class="col-sm-6">{{ task.due_date|date:"m/d/Y" }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-cogs"></i> Actions</h5>
+            </div>
+            <div class="card-body">
+                {% if task.status != 'completed' %}
+                    <p class="text-muted">Quick actions for this task:</p>
+                    {% if task.status == 'todo' %}
+                        <a href="{% url 'task_update' task.pk %}" class="btn btn-info btn-sm w-100 mb-2">
+                            <i class="fas fa-play"></i> Mark In Progress
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'task_update' task.pk %}" class="btn btn-success btn-sm w-100">
+                        <i class="fas fa-check"></i> Mark Completed
+                    </a>
+                {% else %}
+                    <p class="text-success">
+                        <i class="fas fa-check-circle"></i> Task completed!
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

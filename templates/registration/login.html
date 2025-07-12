@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - To-Do App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <h3><i class="fas fa-sign-in-alt"></i> Login</h3>
+                <p class="text-muted">Sign in to access your tasks</p>
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            <i class="fas fa-user"></i> Username
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="{{ form.username.id_for_label }}" 
+                               name="{{ form.username.name }}"
+                               value="{{ form.username.value|default:'' }}"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="{{ form.password.id_for_label }}" 
+                               name="{{ form.password.name }}"
+                               required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle"></i> 
+                    Don't have an account? Contact the administrator.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5><i class="fas fa-rocket"></i> About This Application</h5>
+                <p class="text-muted">
+                    A multi-user task management application built with Django.
+                    Manage your tasks with priorities, due dates, and status tracking.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

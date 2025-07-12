@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}My Tasks - To-Do App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2><i class="fas fa-list"></i> My Tasks</h2>
+        
+        {% if tasks %}
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="card text-center bg-primary text-white">
+                        <div class="card-body">
+                            <h5>{{ total_tasks }}</h5>
+                            <small>Total</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center bg-warning text-dark">
+                        <div class="card-body">
+                            <h5>{{ pending_tasks }}</h5>
+                            <small>Pending</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center bg-success text-white">
+                        <div class="card-body">
+                            <h5>{{ completed_tasks }}</h5>
+                            <small>Completed</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% for task in tasks %}
+                <div class="card mb-3 priority-{{ task.priority }}">
+                    <div class="card-body {% if task.status == 'completed' %}status-completed{% endif %}">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="card-title">
+                                    <a href="{% url 'task_detail' task.pk %}" class="text-decoration-none">
+                                        {{ task.title }}
+                                    </a>
+                                </h5>
+                                {% if task.description %}
+                                    <p class="card-text">{{ task.description|truncatewords:20 }}</p>
+                                {% endif %}
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i> Created on {{ task.created_date|date:"m/d/Y" }}
+                                    {% if task.due_date %}
+                                        | <i class="fas fa-clock"></i> Due: {{ task.due_date|date:"m/d/Y" }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'normal' %}warning{% else %}success{% endif %}">
+                                    {{ task.get_priority_display }}
+                                </span>
+                                <span class="badge bg-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}info{% else %}secondary{% endif %}">
+                                    {{ task.get_status_display }}
+                                </span>
+                                <div class="btn-group mt-2">
+                                    <a href="{% url 'task_update' task.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'task_delete' task.pk %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if is_paginated %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                <h4>No tasks</h4>
+                <p class="text-muted">You haven't created any tasks yet.</p>
+                <a href="{% url 'task_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create your first task
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'task_create' %}" class="btn btn-primary btn-block mb-2 w-100">
+                    <i class="fas fa-plus"></i> New Task
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
